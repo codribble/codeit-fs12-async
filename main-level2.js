@@ -30,19 +30,100 @@ const todoInputEl = document.getElementById("todo-input");
 // ============================================
 
 async function getTodos() {
+  try {
+    const response = await fetch(BASE_URL);
+    const todos = await response.json();
 
+    todos.forEach((todo) => {
+      const item = document.createElement("li");
+      item.classList.add("todo-item");
+      todo.completed && item.classList.add("completed");
+
+      const title = document.createElement("span");
+      title.classList.add("title");
+      title.textContent = todo.title;
+
+      const btnToggle = document.createElement("button");
+      btnToggle.classList.add("btn-toggle");
+      btnToggle.textContent = todo.completed ? "완료됨" : "미완료";
+      btnToggle.addEventListener("click", (e) => {
+        toggleTodo(todo.id, todo.completed);
+      });
+
+      const btnDelete = document.createElement("button");
+      btnDelete.classList.add("btn-delete");
+      btnDelete.textContent = "삭제";
+      btnDelete.addEventListener("click", (e) => {
+        deleteTodo(todo.id);
+      });
+
+      item.appendChild(title);
+      item.appendChild(btnToggle);
+      item.appendChild(btnDelete);
+      todoListEl.appendChild(item);
+    });
+
+    return todos;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function addTodo(title) {
+  try {
+    const todo = {
+      title: title,
+      completed: false,
+    };
 
+    const response = await fetch(`${BASE_URL}`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/",
+      },
+      body: JSON.stringify(todo),
+    });
+    const addedTodo = await response.json();
+    todoInputEl.focus();
+    return addedTodo;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function toggleTodo(id, completed) {
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`);
+    const todo = await response.json();
+    const updatedTodo = { ...todo, completed: !completed };
 
+    const updateResponse = await fetch(`${BASE_URL}/${id}`, {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedTodo),
+    });
+    const result = updateResponse.json();
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function deleteTodo(id) {
-
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const deletedTodos = response.json();
+    return deletedTodos;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // ============================================

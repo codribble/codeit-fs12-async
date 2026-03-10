@@ -50,25 +50,82 @@ function renderTodos(todos) {
 
 // 할 일 목록 불러오기
 async function getTodos() {
-
+  try {
+    const response = await fetch(BASE_URL);
+    const todos = await response.json();
+    renderTodos(todos); // try 안에서 호출
+    return todos;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // 새 할 일 추가하기
 // 완료 후 getTodos()를 호출해서 화면을 갱신하세요.
 async function addTodo(title) {
+  try {
+    const todo = {
+      title: title,
+      completed: false,
+    };
 
+    const response = await fetch(BASE_URL, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(todo),
+    });
+    const newTodo = await response.json();
+    getTodos();
+    return newTodo;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // 할 일 완료 토글하기
 // 완료 후 getTodos()를 호출해서 화면을 갱신하세요.
 async function toggleTodo(id, completed) {
+  // 변경된 completed 부분만 patch 로 처리하려고 했으나, 에러가 떠서 찾아보니 cors 이슈 발생
+  // get 으로 변경할 데이터를 가져온 후에 spread 연산자를 이용해서 기존 데이터는 유지, 변경된 데이터만 수정을 하고 put 으로 갈아엎는 방향으로 우회 처리
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`);
+    const todo = await response.json();
 
+    const updatedTodo = {
+      ...todo,
+      completed: !completed,
+    };
+    const updatedResponse = await fetch(`${BASE_URL}/${id}`, {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedTodo),
+    });
+    const result = await updatedResponse.json();
+    getTodos();
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // 할 일 삭제하기
 // 완료 후 getTodos()를 호출해서 화면을 갱신하세요.
 async function deleteTodo(id) {
-
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: "delete",
+      "Content-Type": "application/json",
+    });
+    const deletedTodos = await response.json();
+    getTodos();
+    return deletedTodos;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // ============================================

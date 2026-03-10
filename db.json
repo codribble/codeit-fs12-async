@@ -1,7 +1,45 @@
 {
   "todos": [
-    { "id": 1, "title": "자바스크립트 복습하기", "completed": false },
-    { "id": 2, "title": "fetch 과제 풀기", "completed": false },
-    { "id": 3, "title": "CSS 플렉스박스 연습", "completed": true }
-  ]
+    {
+      "id": "1",
+      "title": "자바스크립트 복습하기",
+      "completed": false
+    },
+    {
+      "id": "2",
+      "title": "fetch 과제 풀기",
+      "completed": false
+    },
+    {
+      "id": "3",
+      "title": "CSS 플렉스박스 연습",
+      "completed": true
+    },
+    {
+      "id": "6be7",
+      "title": "추가 테스트",
+      "completed": false
+    },
+    {
+      "id": "bd46",
+      "title": "추가,삭제는 잘 되는데 수정은 cors 이슈가 있음",
+      "completed": false
+    },
+    {
+      "id": "053a",
+      "title": "test",
+      "completed": false
+    },
+    {
+      "id": "049b",
+      "title": "level2 test",
+      "completed": true
+    },
+    {
+      "id": "a119",
+      "title": "level3 add",
+      "completed": true
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
