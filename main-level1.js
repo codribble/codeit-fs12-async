@@ -70,7 +70,7 @@ async function addTodo(title) {
     };
 
     const response = await fetch(BASE_URL, {
-      method: "post",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -90,21 +90,16 @@ async function toggleTodo(id, completed) {
   // 변경된 completed 부분만 patch 로 처리하려고 했으나, 에러가 떠서 찾아보니 cors 이슈 발생
   // get 으로 변경할 데이터를 가져온 후에 spread 연산자를 이용해서 기존 데이터는 유지, 변경된 데이터만 수정을 하고 put 으로 갈아엎는 방향으로 우회 처리
   try {
-    const response = await fetch(`${BASE_URL}/${id}`);
-    const todo = await response.json();
-
-    const updatedTodo = {
-      ...todo,
-      completed: !completed,
-    };
-    const updatedResponse = await fetch(`${BASE_URL}/${id}`, {
-      method: "put",
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedTodo),
+      body: JSON.stringify({
+        completed: !completed,
+      }),
     });
-    const result = await updatedResponse.json();
+    const updatedTodo = await response.json();
     getTodos();
     return result;
   } catch (error) {
@@ -117,8 +112,7 @@ async function toggleTodo(id, completed) {
 async function deleteTodo(id) {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
-      method: "delete",
-      "Content-Type": "application/json",
+      method: "DELETE",
     });
     const deletedTodos = await response.json();
     getTodos();

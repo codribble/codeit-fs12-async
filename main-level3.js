@@ -25,7 +25,7 @@ const getTodos = async () => {
       item.classList.add("todo-item");
       todo.completed && item.classList.add("completed");
 
-      const title = document.createElement("spna");
+      const title = document.createElement("span");
       title.classList.add("title");
       title.textContent = todo.title;
 
@@ -58,20 +58,34 @@ const getTodos = async () => {
 // 할 일 완료/미완료 toggle
 const toggleTodo = async (id, completed) => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`);
-    const originTodo = await response.json();
-    const updatedTodo = { ...originTodo, completed: !completed };
+    // 대소문자를 가리지 않는다고 해서
+    // patch, content-type 으로 소문자로 작성했었는데, 혹시나 해서
+    // PATCH, Content-Type 으로 변경해보니 CORS 이슈가 해결되고, PATCH 도 잘 되는 것을 확인
+    // const response = await fetch(`${BASE_URL}/${id}`);
+    // const originTodo = await response.json();
+    // const updatedTodo = { ...originTodo, completed: !completed };
 
-    const response2 = await fetch(`${BASE_URL}/${id}`, {
-      method: "put",
+    // const response2 = await fetch(`${BASE_URL}/${id}`, {
+    //   method: "put",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(updatedTodo),
+    // });
+    // const result = await response2.json();
+
+    // return result;
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: "PATCH",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedTodo),
+      body: JSON.stringify({
+        completed: !completed,
+      }),
     });
-    const result = await response2.json();
-
-    return result;
+    const updatedTodo = await response.json();
+    getTodos();
   } catch (error) {
     console.error(error);
   }
@@ -81,14 +95,10 @@ const toggleTodo = async (id, completed) => {
 const deleteTodo = async (id) => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
-      method: "delete",
-      headers: {
-        "content-type": "application/json",
-      },
+      method: "DELETE",
     });
     const deletedTodo = response.json();
-
-    return deletedTodo;
+    getTodos();
   } catch (error) {
     console.error(error);
   }
@@ -97,17 +107,15 @@ const deleteTodo = async (id) => {
 // 할 일 추가
 const addTodo = async (title) => {
   try {
-    const todo = {
-      title: title,
-      completed: false,
-    };
-
     const response = await fetch(BASE_URL, {
-      method: "post",
+      method: "POST",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(todo),
+      body: JSON.stringify({
+        title: title,
+        completed: false,
+      }),
     });
     const addedTodo = await response.json();
     return addedTodo;
