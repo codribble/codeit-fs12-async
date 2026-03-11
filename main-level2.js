@@ -77,15 +77,14 @@ async function addTodo(title) {
     };
 
     const response = await fetch(`${BASE_URL}`, {
-      method: "post",
+      method: "POST",
       headers: {
-        "Content-Type": "application/",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(todo),
     });
     const addedTodo = await response.json();
-    todoInputEl.focus();
-    return addedTodo;
+    getTodos();
   } catch (error) {
     console.error(error);
   }
@@ -93,19 +92,17 @@ async function addTodo(title) {
 
 async function toggleTodo(id, completed) {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`);
-    const todo = await response.json();
-    const updatedTodo = { ...todo, completed: !completed };
-
-    const updateResponse = await fetch(`${BASE_URL}/${id}`, {
-      method: "put",
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedTodo),
+      body: JSON.stringify({
+        completed: !completed,
+      }),
     });
-    const result = updateResponse.json();
-    return result;
+    const updatedTodo = response.json();
+    getTodos();
   } catch (error) {
     console.error(error);
   }
@@ -114,12 +111,10 @@ async function toggleTodo(id, completed) {
 async function deleteTodo(id) {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
-      method: "delete",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      method: "DELETE",
     });
     const deletedTodos = response.json();
+    getTodos();
     return deletedTodos;
   } catch (error) {
     console.error(error);
